@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Get the PID and the command of the process running on port 4000
+PROCESS_INFO=$(lsof -i :4000 | grep "bundle")
+
+# Check if the PROCESS_INFO is empty (no bundle process found)
+if [ -z "$PROCESS_INFO" ]; then
+    echo "No bundle process is running on port 4000."
+else
+    # Extract the PID from the process info
+    PID=$(echo $PROCESS_INFO | awk '{print $2}')
+    
+    # Kill the process
+    kill -9 $PID
+    if [ $? -eq 0 ]; then
+        echo "Successfully killed bundle process running on port 4000."
+    else
+        echo "Failed to kill bundle process."
+    fi
+fi
