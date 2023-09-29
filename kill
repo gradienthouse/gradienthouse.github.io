@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Get the PID and the command of the process running on port 4000
-PROCESS_INFO=$(lsof -i :4000 | grep "bundle")
+PROCESS_INFO=$(lsof -i :4000)
 
 # Check if the PROCESS_INFO is empty (no bundle process found)
 if [ -z "$PROCESS_INFO" ]; then
