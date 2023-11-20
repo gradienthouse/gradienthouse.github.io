@@ -9,7 +9,7 @@ collections:
   projects:
     output: true
 
-linkedin_username: GradientHouse
+linkedin_username: gradienthouse
 
 # Build settings
 markdown: kramdown
