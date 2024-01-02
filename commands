@@ -1,0 +1,8 @@
+sudo apt install ruby-bundler
+
+gem install bundler:2.4.19
+
+lsof -i :4000 | grep ruby | awk '{print $2}' | xargs kill -9
+
+bundle exec jekyll serve
+
