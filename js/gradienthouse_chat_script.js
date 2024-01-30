@@ -142,7 +142,7 @@ function addHtml() {
 document.addEventListener("DOMContentLoaded", function() {
     addStyles();
     addHtml();
-    const apiURL = 'http://51.21.35.121:5000/chat'
+    const apiURL = '51.21.35.121:5000/chat'
     const token = 'tokenisko'
 
     var chatContainer = document.querySelector('.chat-container');
@@ -190,7 +190,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ message: message })
+                    body: JSON.stringify({ message: message, token: token })
                 });
                 inputElement.value = '';
                 const response = await Promise.race([fetchPromise, timeoutPromise]);
@@ -206,6 +206,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const data = await response.json();
                 displayMessage('Bot', data.response ? data.response : 'Przepraszam, mam problem techniczny');
             } catch (error) {
+                displayMessage('Bot', data.response ? data.response : 'Przepraszam, mam problem techniczny');
                 console.error('Error:', error);
             } finally {
                 inputElement.value = ''; // Clear the input field
