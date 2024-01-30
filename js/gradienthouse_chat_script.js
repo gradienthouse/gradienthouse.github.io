@@ -143,6 +143,7 @@ document.addEventListener("DOMContentLoaded", function() {
     addStyles();
     addHtml();
     const apiURL = 'https://51.21.35.121/chat'
+    //const apiURL = 'http://127.0.0.1:5000/chat'
     const token = 'tokenisko'
 
     var chatContainer = document.querySelector('.chat-container');
@@ -188,8 +189,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 const fetchPromise = fetch(apiURL, {
                     method: 'POST',
                     headers: {
-                      'Content-Type': 'application/json',
-                      'Origin': 'https://www.gradienthouse.pl'
+                      'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({ message: message, token: token })
                   });
