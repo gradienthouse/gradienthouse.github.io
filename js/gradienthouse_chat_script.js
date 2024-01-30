@@ -188,10 +188,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 const fetchPromise = fetch(apiURL, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                      'Content-Type': 'application/json',
+                      'Origin': 'https://www.gradienthouse.pl'
                     },
                     body: JSON.stringify({ message: message, token: token })
-                });
+                  });
+                  
                 inputElement.value = '';
                 const response = await Promise.race([fetchPromise, timeoutPromise]);
 
