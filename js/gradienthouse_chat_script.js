@@ -142,7 +142,7 @@ function addHtml() {
 document.addEventListener("DOMContentLoaded", function() {
     addStyles();
     addHtml();
-    const apiURL = '51.21.35.121:5000/chat'
+    const apiURL = 'https://51.21.35.121:5000/chat'
     const token = 'tokenisko'
 
     var chatContainer = document.querySelector('.chat-container');
