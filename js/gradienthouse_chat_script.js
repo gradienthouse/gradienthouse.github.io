@@ -142,7 +142,7 @@ function addHtml() {
 document.addEventListener("DOMContentLoaded", function() {
     addStyles();
     addHtml();
-    const apiURL = 'https://51.21.35.121/chat'
+    const apiURL = 'https://gradient-chat.pl/chat'
     //const apiURL = 'http://127.0.0.1:5000/chat'
     const token = 'tokenisko'
 
