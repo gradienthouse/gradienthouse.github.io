@@ -273,7 +273,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({message: 'INITCONVERSATION!'})
+                body: JSON.stringify({message: 'INITCONVERSATION!', token: token})
             });
             const data = await response.json();
             if (Array.isArray(data.response)) {
