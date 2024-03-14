@@ -360,7 +360,7 @@ document.addEventListener("DOMContentLoaded", function() {
         const senderImage = document.createElement('img');
         senderImage.classList.add('sender-image');
         // Set the source of the image based on the sender
-        senderImage.src = sender === 'You' ? 'static/client.png' : 'static/chat-bot.png';
+        senderImage.src = sender === 'You' ? 'img/client.png' : 'img/chat-bot.png';
 
         // Create a text element for the message
         const messageText = document.createElement('span');
