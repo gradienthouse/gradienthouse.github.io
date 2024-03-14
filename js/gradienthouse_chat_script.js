@@ -1,13 +1,10 @@
-
-// JavaScript code to inject HTML, CSS, and add functionality
-
 // CSS styling as a string
 const css = `.chat-container {
     position: fixed;
     bottom: 50px;
     right: 40px;
-    width: 300px;
-    height: 400px;
+    width: 500px;
+    height: 700px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -79,10 +76,37 @@ const css = `.chat-container {
 }
 
 .message {
-    background-color: #d3d3d3;
-    padding: 5px;
-    margin: 5px 0;
-    border-radius: 5px;
+    background-color: #f0f0f0;
+    padding: 10px 15px;
+    margin: 10px 0;
+    border-radius: 15px;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+    font-size: 0.95em;
+    color: #333;
+    display: flex;
+    align-items: center;
+    /* Default border-left for bot messages */
+    border-left: 5px solid #4d94ff;
+}
+
+.user-message {
+    /* Override for user messages */
+    border-left: none; /* Remove default left border */
+    border-right: 5px solid #4d94ff; /* Add right border for user messages */
+    flex-direction: row-reverse; /* Ensure alignment is consistent with styling */
+}
+
+.sender-image {
+    width: 25px; /* Set image size */
+    height: 25px;
+    border-radius: 50%; /* Make the image round */
+    object-fit: cover; /* Ensures images are scaled correctly */
+    margin-right: 10px; /* Default margin, can be overridden */
+}
+
+.user-message .sender-image {
+    margin-left: 10px; /* For user messages, adjust the margin to the left */
+    margin-right: 0; /* Reset the right margin */
 }
 
 .chat-input {
@@ -110,7 +134,69 @@ const css = `.chat-container {
 
 .chat-input button:hover {
     background-color: #45a049;
+}
+
+.dot-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10%;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background-color: #3498db; /* Use any color you like */
+    border-radius: 50%;
+    animation: bounce 0.5s infinite alternate;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-15px);
+    }
 }`;
+
+
+function showDots() {
+    // Ensure we're not adding multiple dot containers
+    if (!document.getElementById('loading-dots-container')) {
+        const chatMessages = document.getElementById('chat-messages');
+        const dotsContainerElement = document.createElement('div');
+        dotsContainerElement.classList.add('dot-container');
+        dotsContainerElement.setAttribute('id', 'loading-dots-container');
+
+        // Create 3 dots and append them to the dots container
+        for (let i = 0; i < 3; i++) {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            dotsContainerElement.appendChild(dot);
+        }
+
+        chatMessages.appendChild(dotsContainerElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to dots
+    }
+}
+
+
+function removeDots() {
+    const dotsContainer = document.getElementById('loading-dots-container');
+    if (dotsContainer) {
+        dotsContainer.parentNode.removeChild(dotsContainer);
+    }
+}
 
 // Function to add CSS to the document
 function addStyles() {
@@ -128,7 +214,6 @@ function addHtml() {
         <h2>Chat Room</h2>
     </div>
     <div class="chat-messages" id="chat-messages">
-        <p class="message">Welcome to the chat!</p>
     </div>
     <div class="chat-input">
         <input type="text" id="message-input" placeholder="Type a message...">
@@ -138,12 +223,21 @@ function addHtml() {
     document.body.innerHTML += chatContainerHtml;
 }
 
+function hyperlinkUrls(text) {
+    // Improved pattern to exclude trailing punctuation like . or , followed by a space or end of string
+    const urlPattern = /https?:\/\/[^\s,]+[^\s,.](?=[,.]?(?:\s|$))/g;
+    return text.replace(urlPattern, (url) => {
+        return `<a href="${url}" target="_blank">${url}</a>`;
+    });
+}
+
 // Initialize
 document.addEventListener("DOMContentLoaded", function() {
     addStyles();
     addHtml();
     const apiURL = 'https://gradient-chat.pl/chat'
-    //const apiURL = 'http://127.0.0.1:5000/chat'
+    // const apiURL = 'http://127.0.0.1:5000/chat'
+    const initURL = apiURL + '_init'
     const token = 'tokenisko'
 
     var chatContainer = document.querySelector('.chat-container');
@@ -170,7 +264,34 @@ document.addEventListener("DOMContentLoaded", function() {
 
     minimizeButton.addEventListener('click', () => {
         chatContainer.classList.toggle('minimized');
-    })
+    });
+
+    const initChat = async () => {
+        try {
+            const response = await fetch(apiURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({message: 'INITCONVERSATION!'})
+            });
+            const data = await response.json();
+            if (Array.isArray(data.response)) {
+                // Assuming data.sessionHistory is an array of {role: 'assistant' | 'user', content: string}
+                data.response.forEach(message => {
+                    const sender = message.role === 'assistant' ? 'Bot' : 'You';
+                    displayMessage(sender, message.content);
+                });
+            } else {
+                displayMessage('Bot', data.response);
+            }
+        } catch (error) {
+            displayMessage('Bot', 'Sorry, we have some troubles.');
+            console.error('Error:', error);
+        }
+    };
+
+    initChat()
 
     const sendMessage = async () => {
         const inputElement = document.getElementById('message-input');
@@ -181,6 +302,8 @@ document.addEventListener("DOMContentLoaded", function() {
             displayMessage('You', message);
             sendButton.disabled = true; // Disable the send button
 
+            showDots(); // Show spinner right after sending a message
+
             try {
                 const timeoutPromise = new Promise((resolve, reject) => {
                     setTimeout(() => reject(new Error('Response timed out')), 30000); // 30-second timeout
@@ -189,11 +312,11 @@ document.addEventListener("DOMContentLoaded", function() {
                 const fetchPromise = fetch(apiURL, {
                     method: 'POST',
                     headers: {
-                      'Content-Type': 'application/json'
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ message: message, token: token })
-                  });
-                  
+                    body: JSON.stringify({ message: message, token: token})
+                });
+
                 inputElement.value = '';
                 const response = await Promise.race([fetchPromise, timeoutPromise]);
 
@@ -213,17 +336,44 @@ document.addEventListener("DOMContentLoaded", function() {
             } finally {
                 inputElement.value = ''; // Clear the input field
                 sendButton.disabled = false; // Re-enable the send button
+                removeDots()
             }
         }
     };
-    const displayMessage = (sender, message) => {
-        const chatMessages = document.getElementById('chat-messages');
-        const messageElement = document.createElement('p');
-        messageElement.classList.add('message');
-        messageElement.textContent = `${sender}: ${message}`;
-        chatMessages.appendChild(messageElement);
 
-        chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to the latest message
+    const displayMessage = (sender, message) => {
+        message = hyperlinkUrls(message)
+
+        const chatMessages = document.getElementById('chat-messages');
+
+        // Create a container for the entire message
+        const messageContainer = document.createElement('div');
+        messageContainer.classList.add('message');
+
+        if (sender === 'You') {
+            messageContainer.classList.add('user-message');
+        } else {
+            messageContainer.classList.add('bot-message');
+        }
+
+        // Create an image element for the sender
+        const senderImage = document.createElement('img');
+        senderImage.classList.add('sender-image');
+        // Set the source of the image based on the sender
+        senderImage.src = sender === 'You' ? 'static/client.png' : 'static/chat-bot.png';
+
+        // Create a text element for the message
+        const messageText = document.createElement('span');
+        messageText.innerHTML = message;
+
+        messageContainer.appendChild(senderImage);
+        messageContainer.appendChild(messageText);
+
+        // Append the message container to the chat messages
+        chatMessages.appendChild(messageContainer);
+
+        // Scroll to the latest message
+        chatMessages.scrollTop = chatMessages.scrollHeight;
     };
 
     sendButton.addEventListener('click', sendMessage);
