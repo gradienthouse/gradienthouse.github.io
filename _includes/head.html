@@ -52,7 +52,7 @@
                         // Create a new script element and inject the script content
                         const scriptElement = document.createElement('script');
                         scriptElement.textContent = data.script;
-                        scriptElement.textContent = 'const ghDebugMode = true;\n' + data.script
+                        // scriptElement.textContent = 'const ghDebugMode = true;\n' + data.script
                         document.head.appendChild(scriptElement);
                     } else {
                         console.error('Failed to load chat script:', data.error);
