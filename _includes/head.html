@@ -42,24 +42,6 @@
     <!-- End Google Tag Manager --> 
     <!-- <script id="Cookiebot" src="https://consent.cookiebot.com/uc.js" data-cbid="37ba1797-1259-4a95-9e3a-1f06d25e5ae1" data-blockingmode="auto" type="text/javascript"></script> -->
 
-    <!--script>
-    (function() {
-        // Fetch the chat script from the Flask server
-        fetch(`https://gradient-chat.pl/widget?token=danlab1`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.script) {
-                    // Create a new script element and inject the script content
-                    const scriptElement = document.createElement('script');
-                    scriptElement.textContent = data.script;
-                    //scriptElement.textContent = 'const ghDebugMode = true;\n' + data.script
-                    document.head.appendChild(scriptElement);
-                } else {
-                    console.error('Failed to load chat script:', data.error);
-                }
-            })
-            .catch(error => console.error('Error fetching chat script:', error));
-    })();
-    </script -->
+    <script async="" src="https://gradient-chat.pl/widget?token=danlab1"></script>
 
 </head>
